@@ -38,7 +38,10 @@ class Grid(object):
         self.rows[y] = changed
 
     def set_inplace(self, x: int, y: int, value: Any):
-        self.rows[y][x] = value
+        if isinstance(self.rows[y], str):
+            self.set(x, y, value)
+        else:
+            self.rows[y][x] = value
 
     def rotate_left(self, joining=None):
         if joining is not None:
@@ -98,7 +101,11 @@ class Grid(object):
                 return items.index(item), row
 
     def locate_all(self, item):
-        for row, items in enumerate(self.rows):
+        rows = self.rows
+        if isinstance(rows[0], list):
+            rows = [''.join(row) for row in rows]
+
+        for row, items in enumerate(rows):
             start = items.find(item)
             while start > -1:
                 yield start, row
