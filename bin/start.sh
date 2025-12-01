@@ -5,15 +5,15 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-if [ -f "2024/$1/main.py" ]; then
+if [ -f "2025/$1/main.py" ]; then
     echo "Python code for this day already exists"
     exit 1
 fi
 
-mkdir -p "2024/$1"
+mkdir -p "2025/$1"
 
-touch "2024/$1/input.txt"
-cat << EOF > "2024/$1/main.py"
+touch "2025/$1/input.txt"
+cat << EOF > "2025/$1/main.py"
 from shared.utils import *
 
 
@@ -32,5 +32,5 @@ class Day$1(Solution):
 Day$1(__file__).solve()
 EOF
 
-idea "2024/$1/input.txt"
-idea "2024/$1/main.py"
+idea "2025/$1/input.txt"
+idea "2025/$1/main.py"

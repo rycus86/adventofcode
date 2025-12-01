@@ -259,6 +259,69 @@ class Grid(object):
             return path
 
 
+class Graph(object):
+    edges: dict[Any, list[Any]]
+
+    def __init__(self, edges: Optional[dict[Any, list[Any]]] = None):
+        if edges is not None:
+            self.edges = edges
+        else:
+            self.edges = dict()
+
+    def get_neighbours(self, node):
+        return self.edges[node]
+
+    def topological_order(self):
+        # Ensure all nodes (including sinks) are represented
+        nodes = set(self.edges.keys())
+        for u in self.edges:
+            for v in self.edges[u]:
+                nodes.add(v)
+
+        # Compute in-degrees
+        in_degree = defaultdict(int)
+        for n in nodes:
+            in_degree[n] = 0
+        for u in self.edges:
+            for v in self.edges[u]:
+                in_degree[v] += 1
+
+        # Initialize queue with all zero in-degree nodes
+        queue = [n for n in nodes if in_degree[n] == 0]
+
+        order = []
+        while queue:
+            u = queue.pop(0)
+            order.append(u)
+            for v in self.edges.get(u, []):
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    queue.append(v)
+
+        if len(order) != len(nodes):
+            raise ValueError("Graph has at least one cycle")
+
+        return order
+
+    def count_paths(self, start, target, topological_order = None):
+        if topological_order is None:
+            topological_order = self.topological_order()
+
+        # num_paths[node] is the number of paths from 'node' to 'target'
+        num_paths = {node: 0 for node in topological_order}
+        num_paths[target] = 1
+
+        # Process in reverse topological order so successors are ready
+        for node in reversed(topological_order):
+            if node == target:
+                continue
+            total = 0
+            for n in self.edges.get(node, []):
+                total += num_paths.get(n, 0)
+            num_paths[node] = total
+
+        return num_paths.get(start, 0)
+
 
 class Cube(object):
     _neighbors = tuple((dx, dy, dz)
